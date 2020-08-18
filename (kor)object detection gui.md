@@ -1,8 +1,3 @@
----
-
-
----
-
 <h1 id="kor--object-detection-gui">(kor)  Object Detection GUI</h1>
 <p>실시간으로 웹캠에 주어지는 이미지를 받고, 물체를 감지하여 클래스 별로 분류하는 GUI 프로그램을 만든다.</p>
 <h2 id="gui-디자인">GUI 디자인</h2>
