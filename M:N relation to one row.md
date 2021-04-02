@@ -29,14 +29,14 @@ mysql> select * from recipe_ingredients limit 5;
 
 
 
-## 1. Join three tables and Create new one
+## 1. Join three tables and Create a view
 
  [Joining three tables using MySQL](https://stackoverflow.com/questions/3709560/joining-three-tables-using-mysql)
 
 [MySQL - How to create a new table that is a join on primary key of two existing tables](https://stackoverflow.com/questions/2112043/mysql-how-to-create-a-new-table-that-is-a-join-on-primary-key-of-two-existing)
 
 ```sql
-create table ri_test as
+create view ri_joined_view as
 (select ri.id, ri.recipe_id, ri.ingredient_id, r.name as recipe_name, i.name as ingredient_name
 from ingredients i
 	inner join recipe_ingredients ri on i.id = ri.ingredient_id
@@ -45,7 +45,7 @@ order by ri.id);
 ```
 
 ```sql
-mysql> select * from ri_test limit 5;
+mysql> select * from ri_joined_view limit 5;
 +-----+-----------+---------------+----------------------------+-----------------+
 | id  | recipe_id | ingredient_id | recipe_name                | ingredient_name |
 +-----+-----------+---------------+----------------------------+-----------------+
@@ -63,12 +63,12 @@ mysql> select * from ri_test limit 5;
 [Can I concatenate multiple MySQL rows into one field?](https://stackoverflow.com/questions/276927/can-i-concatenate-multiple-mysql-rows-into-one-field)
 
 ```sql
-create table recipes_test as
+create view ri_view as
 (
 select r.id,r.name, ri.ingredients from recipes r
 left join (
 select recipe_id, GROUP_CONCAT(ingredient_name SEPARATOR ', ') as ingredients
-from ri_test
+from ri_joined_view
 group by recipe_id
 ) ri
 on r.id = ri.recipe_id
@@ -76,7 +76,7 @@ on r.id = ri.recipe_id
 ```
 
 ```
-mysql> select * from recipes_test limit 5;
+mysql> select * from ri_view limit 5;
 +----+------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | id | name                                           | ingredients                                                                                                                                                            |
 +----+------------------------------------------------+------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
