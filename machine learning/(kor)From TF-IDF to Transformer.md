@@ -4,6 +4,7 @@
 ## TF-IDF 과 BM25
 
 TF-IDF 는 주어진 키워드의 빈도수(term frequency)를 역문서빈도(inverse document frequency)와 곱한 것이다. 역문서 빈도는 전체 문서 중 키워드를 포함하는 문서의 값을 역으로 취한 것이다. log 를 씌우는 이유는 문서의 값이 많아질수록 IDF 의 값이 차이가 많이 나기 때문에 그 규모를 줄이기 위함이다. IDF 는 해당 키워드가 흔하지 않을 수록 높아지고, TF 는 한 문서에서 해당 키워드가 많이 출현할 수록 높아진다. 문서는 각 단어의 TF-IDF로 이루어진 벡터로 표현되고, 이후 질의문이 들어오면 질의문의 TF-IDF과 코사인 유사도를 계산해서 유사한 문서를 제시한다.
+
 <img src="img/tf-idf.jpg" width="400px"/>
 
 BM25 는 TF-IDF 의 코사인 유사도를 정규화하고 평활화(smoothing)한다. 곱셈의 왼쪽 항이 IDF 이고, 오른쪽 항이 TF 를 정규화 한 것이다. TF 부분부터 보자면, f_td 는 문서 d 에서의 t 의 빈도이다. 분모의 k, b 는 상수 파라미터이며, 해당 문서 길이 l(d) 를 평균 문서 길이 avgdl 로 나눈값도 정규화에 쓰인다. IDF 부분의 N 은 전체 문서, df_t는 해당 단어를 포함하는 문서의 개수이며 0.5 를 더함으로써 분모가 0이 되는 일이 없도록 smoothing 을 한다. *cf. 라플라스 평활화*
@@ -19,6 +20,7 @@ BM25 는 TF-IDF 의 코사인 유사도를 정규화하고 평활화(smoothing)�
 ### LSA: Latent Semantic Analysis 잠재 의미 분석
 
 잠재 의미분석(LSA, Latent Semantic Analysis)은 TF-IDF 벡터를 분석해서 문서의 주제를 추출하는 알고리즘이다.  선형 판별 분석이 이진 분류의 지도 학습 방법이었다면, LSA 는 다차원의 주제로 이루어졌으며 주제를 미리 설정할 필요가 없는 비지도 학습이다. 이는 이미지와 같은 고차원 자료의 차원을 줄이기 위한 주성분 분석(PCA, Principal Component Analysis) 기법에서 차용했다. 
+
 <img src="img/lsa.jpg" width="600px"/>
 
 LSA 는 위해 특잇값 분해(SVD, Singular Value Decomposition)를 사용하여 용어-문서 행렬(또는 용어 대신 TF-IDF)로부터 주제-문서 행렬을 생성한다. SVD 는 원래의 용어-문서 행렬을 세개의 핼렬 곱으로 분해하는데, U, V는 직교 행렬(역행렬과 전치행렬이 같음)이며, S(D, 또는 시그마)는 대각행렬이다. 이때 대각 행렬 S의 대각원소를 행렬 A의 특이값(singular value)라고 한다. 이 S 의 크기가 주제의 개수이며, 크기를 줄일 경우, 절단된 SVD(Truncated SVD)라고 한다. 
@@ -44,6 +46,7 @@ LSA 가 한 문서의 의미(주제)를 파악하는 것에 가깝다면, Word2V
 ## RNN과 LSTM
 
 CNN 이나 Word2Vec 은 인접한 단어들을 통해 패턴을 파악한다. 하지만 입력 텍스트에서는 멀리 떨어져있지만 인접한 의미를 공유하는 단어도 있다. 이 의미를 파악하기 위해 순환신경망(RNN, Recursive Neural Networ)은 이번 t 단계에서의 출력을 다음 t+1 단계의 입력으로 보낸다. 
+
 <img src="img/rnn.png" width="500px"/>
 
 역전파는 BPTT(BackPropagation Through Time) 라고 하는데, 마지막 단계의 출력에서 목표값과의 오차를 구한 후 이전 단계의 가중치가 기여한 정도를 파악한다. 이때, 갱신은 가장 첫 단계에 와서 이루어진다. RNN 의 문제점은 기울기 소실 문제 또는 기울기 폭발 문제를 발생시킨다는 점이다. 신경망의 층이 깊어질 수록 역전파의 기울기가 소멸하거나 증폭되기 때문이다. 
@@ -74,6 +77,7 @@ Attention 은 디코더의 출력 단어를 예측하는 시점에 연관이 있
 트랜스포머는 seq2seq의 인코더, 디코더에서 사용했던 RNN기반의 신경망 대신 attention 만으로 인코더와 디코더를 구현한 것이다. 하지만 RNN의 장점이었던 단어의 순차적인 위치 정보가 없어지는데, 이는 Positional Encoding 을 통해 해결한다. Positional Encoding 은 단어 임베딩 백터의 짝수 위치에는 사인 함수를, 홀수 위치에는 코사인 함수를 사용한 수식을 적용한다.  
 
 이러한 단어 임베딩으로 우선 인코더에서 Self Attention 을 병렬적으로(Multi-head) 진행한다.  Attention 은 특정 단어(query)와 다른 단어(key,value)의 관계를 계산하는데, 먼저 qurey 와 전체 key 행렬을 내적해서 attention score 를 구하고 softmax 확률 값으로 만든다. 그리고 이 확률 벡터를 다시 value 와 곱하면 q,k의 관계가 v 에 가중된 결과를 얻을 수 있다. 
+
 <img src="img/multiattention.png" width="500px"/>
 
 인코더에서는 q,k,v 가 모두 같은 self attention 을 진행한다. 
