@@ -1,7 +1,5 @@
 # NLP 훑어보기: TF-IDF 부터 Transformer 까지
 
-[TOC]
-
 
 ## TF-IDF 과 BM25
 
@@ -9,6 +7,7 @@ TF-IDF 는 주어진 키워드의 빈도수(term frequency)를 역문서빈도(i
 <img src="img/tf-idf.jpg" width="400px"/>
 
 BM25 는 TF-IDF 의 코사인 유사도를 정규화하고 평활화(smoothing)한다. 곱셈의 왼쪽 항이 IDF 이고, 오른쪽 항이 TF 를 정규화 한 것이다. TF 부분부터 보자면, f_td 는 문서 d 에서의 t 의 빈도이다. 분모의 k, b 는 상수 파라미터이며, 해당 문서 길이 l(d) 를 평균 문서 길이 avgdl 로 나눈값도 정규화에 쓰인다. IDF 부분의 N 은 전체 문서, df_t는 해당 단어를 포함하는 문서의 개수이며 0.5 를 더함으로써 분모가 0이 되는 일이 없도록 smoothing 을 한다. *cf. 라플라스 평활화*
+
 <img src="img/bm25_formula.png" width="600px"/>
 
 ## 빈도에서 의미로, 차원 축소 기법
@@ -49,17 +48,22 @@ CNN 이나 Word2Vec 은 인접한 단어들을 통해 패턴을 파악한다. �
 
 역전파는 BPTT(BackPropagation Through Time) 라고 하는데, 마지막 단계의 출력에서 목표값과의 오차를 구한 후 이전 단계의 가중치가 기여한 정도를 파악한다. 이때, 갱신은 가장 첫 단계에 와서 이루어진다. RNN 의 문제점은 기울기 소실 문제 또는 기울기 폭발 문제를 발생시킨다는 점이다. 신경망의 층이 깊어질 수록 역전파의 기울기가 소멸하거나 증폭되기 때문이다. 
 
-LSTM(Long Short-Term Memory)는 기울기 문제를 완화하면서, RNN 의 기능을 강화한다. 신경망의 각 층에 상태 state 를 도입해서 다음 단계로 갈수록 입력 텍스트 전체를 아우르는 기억을 생성한다. <img src="img/lstm.png" width="550px" alt="https://d2l.ai/chapter_recurrent-modern/lstm.html"/>
+LSTM(Long Short-Term Memory)는 기울기 문제를 완화하면서, RNN 의 기능을 강화한다. 신경망의 각 층에 상태 state 를 도입해서 다음 단계로 갈수록 입력 텍스트 전체를 아우르는 기억을 생성한다. 
+
+<img src="img/lstm.png" width="550px" alt="https://d2l.ai/chapter_recurrent-modern/lstm.html"/>
 
 이 기억 상태는 3개의 게이트를 통과한다. 2개의 게이트는 마스크 mask를 갖고 기억 상태를 갱신 한다. 망각게이트는 필요 없는 기억을 제거하고, 후보 게이트는 강화할 성분들을 선택한다. 마지막으로 출력 게이트는 최종적으로 갱신되 기억 벡터와 입력 데이터를 곱하고 활성화 함수를 적용해서 출력을 한다. 이 출력은 다음 단계의 LSTM 으로 내보낸다. *cf.GRU*, Gated Recurrent Unit
 
 ## Seq2Seq 과 Attention
 
-Seq2Seq 은 LSTM(또는 GRU)으로 이루어진 인코더와 디코더 구조를 뜻한다. 입력 텍스트를 인코더에 넣어 벡터를 생성하고, 이 생성된 벡터와 기대 출력값을 디코더에 넣어 출력을 한다. 이는 입력과 출력의 길이가 다른 번역에 쓰기 적합한 형태이고, 또한 LSTM 의 특성상 가변 길이의 텍스트를 생성할 수 있다.<img src="img/seq2seq.png" width="550px" alt="https://www.google.com/url?sa=i&url=http%3A%2F%2Fincredible.ai%2Fnlp%2F2020%2F02%2F20%2FSequence-To-Sequence-with-Attention%2F&psig=AOvVaw2bJb1oEs7Tvo3HqrPxRRLk&ust=1629290993318000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCNiDloqMuPICFQAAAAAdAAAAABAb"/>
+Seq2Seq 은 LSTM(또는 GRU)으로 이루어진 인코더와 디코더 구조를 뜻한다. 입력 텍스트를 인코더에 넣어 벡터를 생성하고, 이 생성된 벡터와 기대 출력값을 디코더에 넣어 출력을 한다. 이는 입력과 출력의 길이가 다른 번역에 쓰기 적합한 형태이고, 또한 LSTM 의 특성상 가변 길이의 텍스트를 생성할 수 있다.
+
+<img src="img/seq2seq.png" width="550px" alt="https://www.google.com/url?sa=i&url=http%3A%2F%2Fincredible.ai%2Fnlp%2F2020%2F02%2F20%2FSequence-To-Sequence-with-Attention%2F&psig=AOvVaw2bJb1oEs7Tvo3HqrPxRRLk&ust=1629290993318000&source=images&cd=vfe&ved=0CAoQjRxqFwoTCNiDloqMuPICFQAAAAAdAAAAABAb"/>
 
 하지만 이런 Seq2Seq 모델은 입력 텍스트를 고정된 크기의 벡터로 표현하는데, 만약 텍스트 길이가 길 경우 벡터로 압축할 때에 텍스트의 의미를 잘 전달하지 못할 것이다. 
 
 Attention 은 디코더의 출력 단어를 예측하는 시점에 연관이 있는 입력 단어에 집중해서 전체 입력을 다시 살펴본다. 즉 y_i 를 선택할 때 인코더 출력의 h_j를 a_ij 만큼 이용한다. y_i 의 벡터 c_i 는 ∑a_ij*h_j 가 된다.  attention score 는 현재 디코더 출력과 인코더 은닉 상태를 통해 계산하고, softmax 함수를 통과시켜 벡터를 생성한다. 이 벡터와 현재 디코더 출력은 다음 디코더 히든 상태를 출력한다.
+
 <img src="img/attention.png" width="450px" alt="https://m.blog.naver.com/ckdgus1433/221608376139"/>
 
 
@@ -69,7 +73,8 @@ Attention 은 디코더의 출력 단어를 예측하는 시점에 연관이 있
 <img src="img/transformer.png" width="350px"/>
 트랜스포머는 seq2seq의 인코더, 디코더에서 사용했던 RNN기반의 신경망 대신 attention 만으로 인코더와 디코더를 구현한 것이다. 하지만 RNN의 장점이었던 단어의 순차적인 위치 정보가 없어지는데, 이는 Positional Encoding 을 통해 해결한다. Positional Encoding 은 단어 임베딩 백터의 짝수 위치에는 사인 함수를, 홀수 위치에는 코사인 함수를 사용한 수식을 적용한다.  
 
-이러한 단어 임베딩으로 우선 인코더에서 Self Attention 을 병렬적으로(Multi-head) 진행한다.  Attention 은 특정 단어(query)와 다른 단어(key,value)의 관계를 계산하는데, 먼저 qurey 와 전체 key 행렬을 내적해서 attention score 를 구하고 softmax 확률 값으로 만든다. 그리고 이 확률 벡터를 다시 value 와 곱하면 q,k의 관계가 v 에 가중된 결과를 얻을 수 있다. <img src="img/multiattention.png" width="500px"/>
+이러한 단어 임베딩으로 우선 인코더에서 Self Attention 을 병렬적으로(Multi-head) 진행한다.  Attention 은 특정 단어(query)와 다른 단어(key,value)의 관계를 계산하는데, 먼저 qurey 와 전체 key 행렬을 내적해서 attention score 를 구하고 softmax 확률 값으로 만든다. 그리고 이 확률 벡터를 다시 value 와 곱하면 q,k의 관계가 v 에 가중된 결과를 얻을 수 있다. 
+<img src="img/multiattention.png" width="500px"/>
 
 인코더에서는 q,k,v 가 모두 같은 self attention 을 진행한다. 
 
