@@ -22,3 +22,16 @@
 * DIP 의존관계 역전 원칙, Dependency Inversion Principle
 
     앞서 본 OCP 예제 `Fruit f = new Apple()` 는 Fruit 이 Apple 에 의존하고 있다. 이처럼 상위 모듈이 하위 모듈에 의존하는 관계를 역전해서, 하위 모듈의 구현으로부터 독립되게 할 수 있다. 즉, 상위 모듈은 하위 모듈에 의존해서는 안되고, 둘 다 추상화에 의존해야한다. 추상화 역시 세부사항에 의존해서는 안된다.
+
+## 객체지향적 코드 작성
+서비스를 사용하기 위해 기존에는 `Service Service = new ServiceImpl();` 처럼 직접 인터페이스와 구현체를 가져와야했다. 또한 ServiceImpl 구현체 내에도 `private final Repository repository = new MemoryRepository();` 로 레포지토리 인스턴스와 구현체에 의존하는 형식이었다. 이러한 방법의 문제점은 ServiceImpl 이 사용하는 MemoryRepository 를 변경할 때도 코드를 직접 변경해야하며(OCP 위반), 이는 상위모듈(ServiceImpl)이 하위모듈(Repository)에 의존하는 문제가 있다(DIP 위반).
+
+기존 코드는 역할과 구현이 분리되어있고, 인터페이스를 통해 다형성도 활용하였지만 객체지향 설계 원칙을 준수했다고 보기는 힘들다. `ServiceImpl` 이 인터페이스에만 의존하도록 코드를 변경하면 `private Repository repository;` 가 `public ServiceImpl(Repository repository)`생성자를 통해 구현체를 주입받도록 해야한다. 
+
+이제 main() 에서 실행할 때 AppConfig 객체를 생성하고, `appConfig.memberService()` 처럼 config 클래스에서 구현체를 가져오면 된다. AppConfig 에서는 `ServiceImpl`, `MemoryRepository` 가 주입된 객체를 반환한다. 이제 구현체를 수정하려면 AppConfig 의 내용만 변경하면 된다. 즉, 클라이언트 코드인 ServiceImpl 는 전혀 영향을 받지 않는다.
+
+* 관심사의 분리(Separation of Concerns): 객체를 사용하는 역할과 구성(연결)하는 역할을 분리해야한다. 구현체는 인터페이스로 실행을 하는 데에만 집중한다. 구현체 내에 있는 다른 클래스와의 의존 관계에 대해, 어떤 클래스 구현체가 오더라도 역할을 수행할 수 있어야한다. 인터페이스가 어떤 구현체를 사용할지는 AppConfig(애플리케이션의 전체 동작 방식 구성)를 통해 객체를 생성하고 연결한다.
+
+* 의존관계 주입(Dependency Injection), 제어의 역전(Inversion of Control): ServiceImpl 는 생성자를 통해 어떤 객체가 주입될지는 알 수 없다. 어떤 객체를 사용할지는 외부 AppConfig 가 결정한다. 이는 클라이언트가 스스로 필요한 객체를 생성하는 것이 아니라, 어떤 객체를 사용할지 외부 클래스인 AppConfig 가 제어권을 가져간 셈이다. 이때 AppConfig 를 IoC 컨테이너 또는 DI 컨테이너라고 한다.
+
+* 애자일 소프트웨어 개발: 객체지향 설계는 민첩(Agile)하게 변화에 대응할 수 있게 한다.
