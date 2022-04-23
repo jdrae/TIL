@@ -1,14 +1,14 @@
 # 웹 101
 
-### 브라우저 동작 방법
+## 브라우저 동작 방법
 
 브라우저는 HTTP 를 이용해 웹 서버에서 웹 자원을 가져오거나, 서버에 정보를 송신하는 소프트웨어이다. URL 에 접속해 서버에서 가져온 내용을 브라우저 화면에 표시하기 위해 렌더링 엔진을 사용하는데, 크롬과 사파리는 웹킷(Webkit)을, 파이어폭스는 게코(Gecko) 엔진을 사용한다. 특히 html 과 css 파일은 W3C 에서 정해진 명세에 따라 파싱해서 화면에 보여준다. html 태그를 모두 DOM(문서 객체 모델, Document Object Model) 로 변환하여 렌더 트리를 생성하고, 화면의 정확한 위치에 노드를 표시한다. 이 때 모든 html 을 파싱할 때까지 기다리지 않고 먼저 받은 내용부터 차례로 화면에 보여준다.
 
-### URL & URI
+## URL & URI
 
 URI 는 고유한 자원 하나를 지칭하고, URL 은 그 자원이 위치한 곳을 의미한다. `http://test.com/main` 은 URL 이자 URI 이지만 `http://test.com/main?id=HELLO&page=1` 은 URL 이 아니라 URI 이다.
 
-### Cookie & Session (+Cache)
+## Cookie & Session (+Cache)
 
 HTTP 프로토콜은 클라이언트가 응답을 받으면 연결을 끊어버리고(connectionless), 클라이언트의 상태 정보는 유지하지 않는다(stateless). 따라서 서버는 클라이언트가 누구인지 매번 확인해야 하는데, 쿠키나 세션을 통해 이와 같은 불편함을 해결한다. 
 
@@ -18,7 +18,7 @@ HTTP 프로토콜은 클라이언트가 응답을 받으면 연결을 끊어버�
 
 캐시는 이미지, css, js 파일을 브라우저에 저장하고 사용하는 것이다. 따라서 한번 저장되면 서버에서 변경되어도 클라이언트에서는 변경이 없을 수도 있기 때문에 캐시를 주기적으로 삭제하거나, header 에 캐시 만료시간을 명시하여 사용한다. 
 
-### JWT (JSON Web Token)
+## JWT (JSON Web Token)
 
 세션 ID 가 세션 저장소에 있는지 확인하는 작업을 거쳐 쿠키보다 보안성을 높였지만, 만약 세션 저장소에 장애가 생긴다면 정상적인 사용자가 인증을 하지 못하는 경우가 생긴다. 또, 세션 정보를 저장하는 것은 HTTP 의 stateless 조건을 위배하기 때문에 서버를 scale out 할 때 따로 세션 저장소를 만들어야한다는 번거로움이 있다. 
 
@@ -30,3 +30,8 @@ sliding sessiong 은 서비스를 사용하고 있는 유저에 대해 만료 �
 
 refresh token 은 access token 을 refresh 해주는 것을 보장하는 토큰이다. JWT 를 처음 발급할 때 발급하여, access token 이 만료되었을 경우 서버에게 새로운 access token 을 발급하도록 요청하는 방식이다. 서버는 refresh token 저장소를 만들어 클라이언트가 요청한 토큰과 일치한지 확인해야하는 작업이 필요하지만, 세션은 매번 저장소에 접근하는 한편 refresh token 은 만료되었을 때만 I/O 가 이루어진다는 점에서 차이가 있다. 이로써 토큰이 탈취되었더라도 refresh token 저장소를 삭제할 수 있다는 점에서 보안과 속도를 잡을 수 있다. 
 
+## RESTful API
+
+REST(REpresentational State Transfer)는 자원에 대한 주소를 지정하는 방법 등 네트워크 아키텍처 원리의 모음이다. HTTP URI 로 자원을 명시하고, HTTP Method 를 통해 해당 자원에 대한 CRUD 를 적용하는 자원 기반의 구조(ROA, Resource Oriented Architecture) 설계이다. 자원이 있는 쪽이 Server, 요청하는 쪽이 Client 가 되는데, 클라이언트의 요청이 서버에 저장되어서는 안되는 무상태(stateless)가 중요한 특징이다. 서버는 각각의 요청을 별개의 것으로 처리하기에 일관적이고 서비스의 자유도가 높아진다.
+
+RESTful API 는 이러한 REST 설계를 따라 서비스 API 를 구현한 것이다. RESTful 하지 못한 경우로는 CRUD 기능을 모두 POST 로 처리한다거나, URI 에 자원과 id 외의 필요없는 정보가 들어간 경우가 있다(/user/delete). 자원은 소문자로 사용하고, CRUD 행위에 대한 동사 표현이 들어가면 안되는 등의 URI 작성 규칙이 있다. 또 리소스 간 연관 관계(일반적으로 has 의 소유 관계)가 있는 경우 `/users/{userid}/devices` 처럼 표시할 수 있다.
