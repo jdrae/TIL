@@ -35,3 +35,20 @@
 * 의존관계 주입(Dependency Injection), 제어의 역전(Inversion of Control): ServiceImpl 는 생성자를 통해 어떤 객체가 주입될지는 알 수 없다. 어떤 객체를 사용할지는 외부 AppConfig 가 결정한다. 이는 클라이언트가 스스로 필요한 객체를 생성하는 것이 아니라, 어떤 객체를 사용할지 외부 클래스인 AppConfig 가 제어권을 가져간 셈이다. 이때 AppConfig 를 IoC 컨테이너 또는 DI 컨테이너라고 한다.
 
 * 애자일 소프트웨어 개발: 객체지향 설계는 민첩(Agile)하게 변화에 대응할 수 있게 한다.
+
+## JPA 의 Entity 가 기본 생성자를 가져야하는 이유
+JPA는 DB 값을 객체 필드에 주입할 때 기본 생성자로 객체를 생성한 후 이러한 Reflection을 사용하여 값을 매핑하기 때문이다.
+
+지연로딩으로 설정하였기 때문에 임시로 hibernate가 생성한 proxy 객체를 가리키는 것이다. 이러한 proxy 객체는 직접 만든 Department class를 상속하기 때문에 public 혹은 protected 기본 생성자가 필요하게 된다. 
+https://hyeonic.tistory.com/191
+
+## @SpringBootApplication
+스프링이 정의한 외부 의존성을 갖는 class들을 스캔해서 Bean으로 등록한다. @Component가 선언된 클래스들을 찾아 Bean으로 등록하는 역할도 한다.
+https://jungguji.github.io/2020/05/26/SpringBootApplication-%EC%9D%98-%EB%8F%99%EC%9E%91-%EB%B0%A9%EC%8B%9D/
+
+## DTO 의 사용범위
+Controller는 View와 도메인 Model의 데이터를 주고 받을 때 별도의 DTO 를 주로 사용합니다. 도메인 객체를 View에 직접 전달할 수 있지만, 민감한 도메인 비즈니스 기능이 노출될 수 있으며 Model과 View 사이에 의존성이 생기기 때문입니다. 
+
+Controller에서 DTO를 완벽하게 Domain 객체로 구성한 뒤 Service에 넘겨주려면, 복잡한 경우 Controller가 여러 Service(혹은 Repository)에 의존하게 됩니다. 이러한 경우 DTO를 Service에게 넘겨주어 Service가 Entity로 변환시키도록 하는 것이 더 나은 방안이라 사료됩니다.
+https://tecoble.techcourse.co.kr/post/2021-04-25-dto-layer-scope/
+

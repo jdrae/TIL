@@ -34,4 +34,22 @@ refresh token 은 access token 을 refresh 해주는 것을 보장하는 토큰�
 
 REST(REpresentational State Transfer)는 자원에 대한 주소를 지정하는 방법 등 네트워크 아키텍처 원리의 모음이다. HTTP URI 로 자원을 명시하고, HTTP Method 를 통해 해당 자원에 대한 CRUD 를 적용하는 자원 기반의 구조(ROA, Resource Oriented Architecture) 설계이다. 자원이 있는 쪽이 Server, 요청하는 쪽이 Client 가 되는데, 클라이언트의 요청이 서버에 저장되어서는 안되는 무상태(stateless)가 중요한 특징이다. 서버는 각각의 요청을 별개의 것으로 처리하기에 일관적이고 서비스의 자유도가 높아진다.
 
-RESTful API 는 이러한 REST 설계를 따라 서비스 API 를 구현한 것이다. RESTful 하지 못한 경우로는 CRUD 기능을 모두 POST 로 처리한다거나, URI 에 자원과 id 외의 필요없는 정보가 들어간 경우가 있다(/user/delete). 자원은 소문자로 사용하고, CRUD 행위에 대한 동사 표현이 들어가면 안되는 등의 URI 작성 규칙이 있다. 또 리소스 간 연관 관계(일반적으로 has 의 소유 관계)가 있는 경우 `/users/{userid}/devices` 처럼 표시할 수 있다.
+* 제약조건들: Clinet-Server, Stateless, Cache, Uniform Interface
+* Uniform Interface: 
+    * Resource-Based & Manipluation Of Resources Through Representations: URI로 지정한 리소스를 Http Method를 통해서 표현하고 구분한다
+    * Self-Descriptive Message: API 문서가 REST API 응답 본문에 존재해야 한다
+    * HATEOAS(Hypermedia As The Engine of Application State): Hypermedia (링크)를 통해서 애플리케이션의 상태 전이가 가능해야 한다. 응답메세지에 링크를 넣어서 구현한다.
+
+* RPC(Remote Procedure Call): hypertext 가 없어서 navigate 할 수 없는 api 는 restful 하지 않다. 단순히 앱의 함수를 실행할 뿐이다. [참고](https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven)
+
+* HAL(Hypertext Application Language): 자원("data") 부분과 링크("_links") 부분을 나누어 응답하는 api 규칙. Newer clients may take advantage of the new links, while legacy clients can sustain themselves on the old links. This is especially helpful if services get relocated and moved around. As long as the link structure is maintained, clients can STILL find and interact with things. [참고](https://stateless.group/hal_specification.html)
+
+https://wonit.tistory.com/454
+
+## CORS(Cross-Origin Resource Sharing)
+
+웹 생태계에는 다른 출처로의 리소스 요청을 제한하는 것과 관련된 두 가지 정책이 존재한다. 한 가지는 이 포스팅의 주제인 CORS, 그리고 또 한 가지는 SOP(Same-Origin Policy)이다. 몇 가지 예외 조항을 두고 이 조항에 해당하는 리소스 요청은 출처가 다르더라도 허용하기로 했는데, 그 중 하나가 “CORS 정책을 지킨 리소스 요청”이다. 
+
+브라우저는 요청 헤더에 Origin이라는 필드에 요청을 보내는 출처를 함께 담아보낸다. 브라우저는 자신이 보냈던 요청의 Origin과 서버가 보내준 응답의 Access-Control-Allow-Origin을 비교해본 후 이 응답이 유효한 응답인지 아닌지를 결정한다.
+
+https://evan-moon.github.io/2020/05/21/about-cors/
