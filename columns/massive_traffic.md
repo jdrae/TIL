@@ -30,3 +30,16 @@ AP 서버는 데이터를 갖고 있는 것이 아니므로 서버의 개수를 
 우선 데이터의 동기화를 위해 Primary/Replica(primary/secondary, master/slave) 구조를 갖도록 시스템을 설계한다. 데이터를 읽는 쿼리는 replica 에서, 갱신하는 쿼리는 primary 에서 처리한다. replica 에서는 매번 데이터를 갱신하는 것이 아니라, primary 에서 갱신된 정보들을 기록한 로그를 받아 한번에 업데이트를 진행하여 동기화를 한다. replica 는 부하가 늘어날 수록 얼마든지 복제할 수 있어 대부분의 웹 서비스의 병목현상을 해결한다. 하지만 primary 는 확장을 할 수 없기 때문에, 갱신이 빈번한 서비스를 개발할 경우는 RDB 가 아닌 다른 데이터베이스를 사용하는 방안이 있다.
 
 한편 대량의 데이터를 나누어 접근하는 기술로는 파티셔닝과 샤딩이 있다. 파티셔닝은 하나의 DB 서버 내에서, 샤딩은 여러 서버에 분산저장하는 방법이다. 파티셔닝은 인덱스를 관리하기 쉬운 크기로 만들기 위해 테이블을 분리하는 방법이다. 쿼리의 성능을 향상시키고, 트랜잭션이 일어날 경우 동시성을 향상할 수 있다. 테이블을 분리하는 기준에는 range partitioning(연속적인 숫자 기준), hash partitioning(key 의 해시값 기준) 등이 있다. 또한 서비스 요구사항에 따라 테이블 컬럼을 기준으로 나누거나(자주사용하는 컬럼 분리) 레코드 개수를 기준으로 나눌 수 있다. 레코드 기준으로 분리하는 수평 파티셔닝(horizontal partitioning) 의 방법은 샤딩과 동일하다. 하지만 샤딩은 분리된 테이블들을 다른 서버에 저장하기 때문에 성능과 확장성의 이점을 가져오는 반면, 데이터 동기화 문제가 발생할 수 있다.
+
+## References
+
+* [대규모 서비스를 지탱하는 기술](https://jeong-pro.tistory.com/235)
+* [대규모 웹 서비스란?](https://12bme.tistory.com/100?category=739626)
+* [확장성 있는 웹 아키텍처와 분산 시스템](https://d2.naver.com/helloworld/206816)
+* [네이버 메인 페이지의 트래픽 처리](https://d2.naver.com/helloworld/6070967)
+* [LINE의 2022년 신년 대응: 리모트 환경에서 트래픽 폭증에 대비하기](https://engineering.linecorp.com/ko/blog/line-2022-new-year/)
+* [분산 처리 환경에서 대용량 트래픽을 견디기 위한 로그인 기능 구현](https://chagokx2.tistory.com/93?category=871365)
+* [대용량 트래픽 처리를 위한 로그인 설계 : Scale up, Scale out](https://velog.io/@qotndus43/%EB%8C%80%EC%9A%A9%EB%9F%89-%ED%8A%B8%EB%9E%98%ED%94%BD-%EC%B2%98%EB%A6%AC%EB%A5%BC-%EC%9C%84%ED%95%9C-%EB%A1%9C%EA%B7%B8%EC%9D%B8-%EC%84%A4%EA%B3%84-Scale-up-Scale-out)
+* [DB분산처리를 위한 sharding](https://techblog.woowahan.com/2687/)
+* [분산 데이터베이스와 성능](https://dataonair.or.kr/db-tech-reference/d-guide/sql/?mod=document&uid=336)
+
